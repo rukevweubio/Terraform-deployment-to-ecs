@@ -42,7 +42,12 @@ jobs:
       - name: Get ECR Repository URL
         id: ecr_repository_url
         working-directory: ${{ env.TF_DIR }}
-        run: echo "ecr_repo_url=$(terraform output -raw ecr_repo_url)" >> $GITHUB_OUTPUT
+        run: |
+          echo "ecr_repo_url<<EOF" >> $GITHUB_OUTPUT
+          terraform output -raw ecr_repo_url >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+  
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
