@@ -63,7 +63,7 @@ jobs:
           docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ steps.ecr_repo_url.outputs.url }}:latest
 
       - name: Push Docker Image to ECR
-        run: docker push ${{ steps.ecr_repo_url.outputs.url }}: latest
+        run: docker push ${{ steps.ecr_repo_url.outputs.url }}:latest
 
   build-and-push-dockerhub:
     runs-on: ubuntu-latest
