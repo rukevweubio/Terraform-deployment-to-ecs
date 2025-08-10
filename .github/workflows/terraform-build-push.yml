@@ -10,8 +10,6 @@ env:
   IMAGE_NAME: my-terraform-image
   IMAGE_TAG: latest
   AWS_REGION: us-east-1
-  DOCKERHUB_PASSWORD: Comfort12345@
-  DOCKERHUB_USERNAME: rukevweubio
 
 jobs:
   terraform-build-push:
@@ -44,26 +42,27 @@ jobs:
         id: ecr_output
         working-directory: ${{ env.TF_DIR }}
         run: |
-          # Run terraform output in silent mode and ensure only raw output
-          URL=$(terraform output -raw ecr_repo_url 2>/dev/null | tr -d '\r\n')
+          echo "🔍 Retrieving ECR repository URL..."
+          URL=$(terraform output -raw ecr_repo_url 2>/dev/null | tr -d '\r\n ')
+          if [ -z "$URL" ]; then
+            echo "❌ Failed to get ECR URL. Check if 'ecr_repo_url' is declared in Terraform outputs."
+            exit 1
+          fi
           echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "ECR URL: $URL"
+          echo "✅ ECR URL: $URL"
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, Tag, and Push Docker Image to ECR
-        working-directory: .  # Adjust if Dockerfile is elsewhere
+      - name: Build and Push Docker Image to ECR
         run: |
           docker build -t ${{ steps.ecr_output.outputs.url }}:${{ env.IMAGE_TAG }} .
           docker push ${{ steps.ecr_output.outputs.url }}:${{ env.IMAGE_TAG }}
 
+
   build-and-push-dockerhub:
     runs-on: ubuntu-latest
     needs: terraform-build-push
-    # env:
-    #   IMAGE_NAME: ${{ env.IMAGE_NAME }}
-    #   IMAGE_TAG: ${{ env.IMAGE_TAG }}
 
     steps:
       - name: Checkout repository
@@ -76,6 +75,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and Push Docker Image to Docker Hub
+        env:
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$IMAGE_TAG .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$IMAGE_TAG
