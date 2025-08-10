@@ -1,4 +1,10 @@
-
+output "ecr_repo_url" {
+  value = aws_ecr_repository.app_repo.repository_url
+}
+output "ecr_repo_arn" {
+  description = "ARN of the ECR repository"
+  value       = aws_ecr_repository.app_repo.arn
+}
 output "ecs_cluster_name" {
   description = "The name of the ECS cluster"
   value       = aws_ecs_cluster.main.name
