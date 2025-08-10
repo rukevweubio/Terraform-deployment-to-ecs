@@ -38,9 +38,12 @@ jobs:
         working-directory: ${{ env.TF_DIR }}
         run: terraform apply -auto-approve -input=false
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Save ECR repo URL to file
         working-directory: ${{ env.TF_DIR }}
-        run: terraform output -raw ecr_repo_url > ecr_repo_url.txt
+        run: terraform output -json ecr_repo_url | jq -r '.' > ecr_repo_url.txt
 
       - name: Login to Amazon ECR
         run: |
