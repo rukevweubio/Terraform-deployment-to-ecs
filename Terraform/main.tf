@@ -100,7 +100,7 @@ resource "aws_security_group" "lb_sg" {
 }
 
 resource "aws_security_group" "ecs_service_sg" {
-  name   = "ecs-service-sg"
+  name   = "ecs-service-sg-${random_id.suffix.hex}"
   vpc_id = aws_vpc.main_vpc.id
 
   ingress {
@@ -119,7 +119,7 @@ resource "aws_security_group" "ecs_service_sg" {
 }
 
 resource "aws_ecs_cluster" "main" {
-  name = "white-hart"
+  name = "white-ecs-cluster-${random_id.suffix.hex}"
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
