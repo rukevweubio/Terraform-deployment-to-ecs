@@ -5,7 +5,7 @@ resource "random_id" "suffix" {
 }
 
 resource "aws_ecr_repository" "app_repo" {
-  name                 = "my-ecs-app"
+  name                 = "my-ecs-app-ubio"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {

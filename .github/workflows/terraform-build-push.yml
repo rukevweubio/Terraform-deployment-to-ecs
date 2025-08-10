@@ -59,11 +59,11 @@ jobs:
           IMAGE_NAME: my-terraform-image
           IMAGE_TAG: latest
         run: |
-          docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
-          docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ steps.ecr_repo_url.outputs.url }}:latest
+          docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}  .
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ steps.ecr_repo_url.outputs.url }}:${{ env.IMAGE_TAG }}
 
       - name: Push Docker Image to ECR
-        run: docker push ${{ steps.ecr_repo_url.outputs.url }}:latest
+        run: docker push ${{ steps.ecr_repository_url.outputs.url }}:${{ env.IMAGE_TAG }}
 
   build-and-push-dockerhub:
     runs-on: ubuntu-latest
