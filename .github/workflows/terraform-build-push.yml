@@ -8,7 +8,7 @@ on:
 env:
   TF_DIR: ./Terraform
   IMAGE_NAME: my-terraform-image
-  IMAGE_TAG: V1
+  IMAGE_TAG: latest
   AWS_REGION: us-east-1
   DOCKERHUB_PASSWORD: Comfort12345@
   DOCKERHUB_USERNAME: rukevweubio
@@ -57,13 +57,13 @@ jobs:
       - name: Build Docker Image
         env:
           IMAGE_NAME: my-terraform-image
-          IMAGE_TAG: V1
+          IMAGE_TAG: latest
         run: |
           docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
-          docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ steps.ecr_repo_url.outputs.url }}:${{ env.IMAGE_TAG }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ steps.ecr_repo_url.outputs.url }}:latest
 
       - name: Push Docker Image to ECR
-        run: docker push ${{ steps.ecr_repo_url.outputs.url }}:${{ env.IMAGE_TAG }}
+        run: docker push ${{ steps.ecr_repo_url.outputs.url }}: latest
 
   build-and-push-dockerhub:
     runs-on: ubuntu-latest
