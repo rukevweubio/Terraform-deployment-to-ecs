@@ -9,7 +9,7 @@ env:
   TF_DIR: ./Terraform
   IMAGE_NAME: my-terraform-image
   IMAGE_TAG: latest
-  AWS_REGION: us-west-2
+  AWS_REGION: us-east-1
 
 jobs:
   terraform-build-push:
