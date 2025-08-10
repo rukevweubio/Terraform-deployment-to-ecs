@@ -48,6 +48,9 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker Image
+        env:
+          IMAGE_NAME: my-terraform-image
+          IMAGE_TAG: latest
         run: |
           docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
           docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ steps.ecr-url.outputs.url }}:${{ env.IMAGE_TAG }}
@@ -57,10 +60,7 @@ jobs:
 
   build-and-push-dockerhub:
     runs-on: ubuntu-latest
-    env:
-    IMAGE_NAME: my-terraform-image
-    IMAGE_TAG: latest
-
+    needs: terraform-build-push
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
