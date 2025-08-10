@@ -8,69 +8,69 @@ on:
 env:
   TF_DIR: ./Terraform
   IMAGE_NAME: my-terraform-image
-  IMAGE_TAG: latest
+  IMAGE_TAG: V1
   AWS_REGION: us-east-1
   DOCKERHUB_PASSWORD: Comfort12345@
   DOCKERHUB_USERNAME: rukevweubio
 
 jobs:
-  # terraform-build-push:
-  #   runs-on: ubuntu-latest
+  terraform-build-push:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-  #     - name: Setup Terraform
-  #       uses: hashicorp/setup-terraform@v2
-  #       with:
-  #         terraform_version: 1.5.0
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
 
-  #     - name: Configure AWS Credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-  #     - name: Terraform Init
-  #       working-directory: ${{ env.TF_DIR }}
-  #       run: terraform init
+      - name: Terraform Init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init
 
-  #     - name: Terraform Apply
-  #       working-directory: ${{ env.TF_DIR }}
-  #       run: terraform apply -auto-approve -input=false
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply -auto-approve -input=false
 
-  #     - name: Get ECR Repository URL
-  #       id: ecr_repository_url
-  #       working-directory: ${{ env.TF_DIR }}
-  #       run: |
-  #         echo "ecr_repo_url<<EOF" >> $GITHUB_OUTPUT
-  #         terraform output -raw ecr_repo_url >> $GITHUB_OUTPUT
-  #         echo "EOF" >> $GITHUB_OUTPUT
+      - name: Get ECR Repository URL
+        id: ecr_repository_url
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          echo "url<<EOF" >> $GITHUB_OUTPUT
+          terraform output -raw ecr_repo_url >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
       
   
 
-      # - name: Login to Amazon ECR
-      #   uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
 
-      # - name: Build Docker Image
-      #   env:
-      #     IMAGE_NAME: my-terraform-image
-      #     IMAGE_TAG: V1
-      #   run: |
-      #     docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
-      #     docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ steps.ecr-url.outputs.url }}:${{ env.IMAGE_TAG }}
+      - name: Build Docker Image
+        env:
+          IMAGE_NAME: my-terraform-image
+          IMAGE_TAG: V1
+        run: |
+          docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ steps.ecr_repo_url.outputs.url }}:${{ env.IMAGE_TAG }}
 
-      # - name: Push Docker Image to ECR
-      #   run: docker push ${{ steps.ecr-url.outputs.url }}:${{ env.IMAGE_TAG }}
+      - name: Push Docker Image to ECR
+        run: docker push ${{ steps.ecr_repo_url.outputs.url }}:${{ env.IMAGE_TAG }}
 
   build-and-push-dockerhub:
     runs-on: ubuntu-latest
-    #needs: terraform-build-push
+    needs: terraform-build-push
     env:                        
       IMAGE_NAME: my-terraform-image
-      IMAGE_TAG: latest
+      IMAGE_TAG: V1
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -86,5 +86,4 @@ jobs:
 
       - name: Push Docker Image to Docker Hub
         run: |
-          
           docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
