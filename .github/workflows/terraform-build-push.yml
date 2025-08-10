@@ -1,4 +1,4 @@
-name: Build AWS Resource with Terraform
+name: Build AWS Resource with Terraform script
 
 on:
   push:
