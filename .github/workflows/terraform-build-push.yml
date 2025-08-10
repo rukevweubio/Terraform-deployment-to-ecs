@@ -10,7 +10,7 @@ env:
   IMAGE_NAME: my-terraform-image
   IMAGE_TAG: latest
   AWS_REGION: us-east-1
-  DOCKERHUB_PASSWORD: cOMFORT12345@
+  DOCKERHUB_PASSWORD: Comfort12345@
   DOCKERHUB_USERNAME: rukevweubio
 
 jobs:
