@@ -43,13 +43,22 @@ jobs:
         working-directory: ${{ env.TF_DIR }}
         run: |
           echo "🔍 Retrieving ECR repository URL..."
-          URL=$(terraform output -raw ecr_repo_url 2>/dev/null | tr -d '\r\n ')
+
+          # Save output to file to avoid command substitution issues
+          terraform output -raw ecr_repo_url > ecr_url.txt
+
+          # Read and clean
+          URL=$(cat ecr_url.txt | tr -d '\r\n ' | sed 's/[^a-zA-Z0-9.:_-]//g')
+          rm -f ecr_url.txt
+
           if [ -z "$URL" ]; then
-            echo "❌ Failed to get ECR URL. Check if 'ecr_repo_url' is declared in Terraform outputs."
+            echo "Failed to retrieve ECR URL. Check Terraform output 'ecr_repo_url'."
             exit 1
           fi
+
+          # Write to GITHUB_OUTPUT (no command substitution!)
           echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "✅ ECR URL: $URL"
+          echo " ECR URL: $URL"
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
