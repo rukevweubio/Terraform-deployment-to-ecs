@@ -33,16 +33,25 @@ jobs:
         with:
           terraform_version: 1.9.8
 
-      - name: Terraform Init
-        run: terraform init
+      - name: change directory to terraform directory
+        working-directory: ./Terraform
+        run : terraform init 
+
+      - name: change directory to terraform directory
+        working-directory: ./Terraform
+        run : terraform validate 
+
 
       - name: Import existing ECR repo
+        working-directory: ./Terraform
         run: terraform import aws_ecr_repository.app_repo ${{ env.ECR_REPO_NAME }} || echo "Already imported"
 
       - name: Terraform Plan
+        working-directory: ./Terraform
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
+        working-directory: ./Terraform
         run: terraform apply -auto-approve tfplan
 
   build-push-ecr:
