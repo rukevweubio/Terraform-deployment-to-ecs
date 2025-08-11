@@ -5,7 +5,7 @@ resource "random_id" "suffix" {
 }
 
 resource "aws_ecr_repository" "app_repo" {
-  name                 = "my-ecs-app-ubio"
+  name                 = "terraform-pipeline"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -13,9 +13,10 @@ resource "aws_ecr_repository" "app_repo" {
   }
 
   tags = {
-    Name = "ecs-app-repo"
+    Name = "terraform-pipeline"
   }
 }
+
 
 resource "aws_vpc" "main_vpc" {
   cidr_block           = var.vpc_cidr_block
